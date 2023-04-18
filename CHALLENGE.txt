@@ -1,0 +1,3 @@
+Recipe Finder: 
+Build a recipe finder app that lets users search for recipes based on ingredients or cuisine. 
+You can use an API like Spoonacular to retrieve the recipe data.

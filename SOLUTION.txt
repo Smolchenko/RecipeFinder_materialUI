@@ -1,0 +1,30 @@
+- Using the useEffect hook to fetch cuisine and ingredient options from the spoonacular API,
+  when the app is first rendered. 
+  The setCuisineOptions and setIngredientOptions functions are then used to update the state 
+  with the retrieved data, 
+  and setCuisine and setIngredients are used to set the default options to random items from the retrieved data.
+  
+  It is a good practice to use try+catch blocks when making HTTP requests to handle any errors that might 
+  occur during the fetch.
+  
+  Per spoonacular, the GET request base (with example) is: 
+  https://api.spoonacular.com/recipes/complexSearch?query=pasta&maxFat=25&number=2
+  
+  // setCuisine(data[Math.floor(Math.random() * data.length)]);
+  The code above sets the cuisine state to a random element from the data array, 
+  which is an array of available cuisines retrieved from the spoonacular API.
+  - Math.random() * data.length generates a random number between 0 (inclusive) and data.length (exclusive).
+  - data[Math.floor(Math.random() * data.length)] selects a random element from the data array by indexing it 
+    with the rounded down random number
+
+
+  
+  
+
+The map method is used to dynamically render the cuisine options in the dropdown, and the ingredients.map method is used to create a comma-separated list of ingredients for the input field.
+
+Recipes.js
+- onrel="noopener noreferrer" attribute ensures that the new page does not have access to the 
+  window.opener property of the old page, which can prevent some security vulnerabilities.
+  
+- in order to use the summary safely (as it's 'dangerouslySetInnerHTML'), install npm install dompurify.

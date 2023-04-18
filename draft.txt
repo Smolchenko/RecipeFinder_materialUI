@@ -1,0 +1,85 @@
+  // const handleSearch = async () => {
+  //   const response = await fetch(
+  //     `https://api.spoonacular.com/recipes/complexSearch?cuisine=${cuisine}&query=${ingredients}&number=10&apiKey=<YOUR_API_KEY>`
+  //   );
+  //   const data = await response.json();
+  //   setRecipes(data.results);
+  // };
+  
+  // useEffect(() => {
+  //   const fetchCuisineOptions = async () => {
+  //     const response = await fetch(
+  //       "https://api.spoonacular.com/recipes/cuisines?apiKey=<YOUR_API_KEY>"
+  //     );
+  //     const data = await response.json();
+  //     setCuisineOptions(data);
+  //     setCuisine(data[Math.floor(Math.random() * data.length)]);
+  //   };
+  //   const fetchIngredientOptions = async () => {
+  //     const response = await fetch(
+  //       "https://api.spoonacular.com/recipes/ingredients?number=10&apiKey=<YOUR_API_KEY>"
+  //     );
+  //     const data = await response.json();
+
+  //     setIngredientOptions(data.ingredients);
+  //     setIngredients(
+  //       data.ingredients.map((ingredient) => ingredient.name).join(", ")
+  //     );
+  //   };
+
+  //   fetchCuisineOptions();
+  //   fetchIngredientOptions();
+  // }, []);
+  
+  // const fetchCuisineOptions = async () => {
+  //   const cuisines = await fetchOptions("cuisines", 5);
+  //   setCuisineOptions(cuisines);
+  // };
+
+  // const fetchIngredientOptions = async () => {
+  //   const ingredients = await fetchOptions("ingredients", 10);
+  //   setIngredientOptions(ingredients);
+  // };
+  
+  
+    useEffect(() => {
+    const fetchCuisineOptions = async () => {
+      const cuisines = await fetchOptions("cuisines", 5);
+      setCuisineOptions(cuisines);
+    };
+    // fetchData(
+    //   `https://api.spoonacular.com/recipes/cuisines?apiKey=${apiKey}&number=10`
+    // )
+    //   .then((data) => {
+    //     setCuisineOptions(data.cuisines);
+    //     setCuisine(
+    //       data.cuisines[Math.floor(Math.random() * data.cuisines.length)]
+    //     );
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   });
+
+    const fetchIngredientOptions = async () => {
+      const ingredients = await fetchOptions("ingredients", 10);
+      setIngredientOptions(ingredients);
+    };
+    // fetchData(
+    //   `https://api.spoonacular.com/food/ingredients/random?apiKey=${apiKey}&number=10`
+    // )
+    //   .then((data) => {
+    //     setIngredientOptions(data.map((ingredient) => ingredient.name));
+    //     setIngredients(data.slice(0, 3).map((ingredient) => ingredient.name));
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   });
+    fetchCuisineOptions();
+    fetchIngredientOptions();
+  }, []);
+  
+    // const handleSearch = async () => {
+  //   const apiUrl = `https://api.spoonacular.com/recipes/complexSearch?cuisine=${cuisine}&query=${ingredients}&number=10&apiKey=${apiKey}`;
+  //   const data = await fetchData(apiUrl);
+  //   setRecipes(data.results);
+  // };
