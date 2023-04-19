@@ -110,13 +110,3 @@ export default function MultipleSelectChip({
     // </Box>
   );
 }
-
-// Object
-// number : 10
-// offset : 0
-// results : (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
-// totalResults : 399
-// [[Prototype]] : Object
-
-// results: Array(10)
-// 0: {id: 782601, title: 'Red Kidney Bean Jambalaya', image: 'https://spoonacular.com/recipeImages/782601-312x231.jpg', imageType: 'jpg'}
