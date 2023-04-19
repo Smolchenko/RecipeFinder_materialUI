@@ -1,0 +1,138 @@
+Recipes.js:
+
+If I wanted to render the text from the API that contains HTML elements such as <b>, <span>, etc. (recipe.summary), 
+    {/* <p
+    dangerouslySetInnerHTML={{
+        __html: DOMPurify.sanitize(recipe.summary),
+    }}
+    /> */}
+I could use dompurify - 
+import DOMPurify from "dompurify";
+
+It is good practice to sanitize the HTML content before rendering it, as shown in the code using 
+DOMPurify.sanitize(). 
+However, it is also important to ensure that the sanitized content does not contain any scripts or 
+potentially harmful code. Therefore, it is recommended to carefully review and test the sanitized 
+content before rendering it on the page.
+
+------------------------------------------------------
+
+Ingredients.js:
+
+Both aria-label and aria-describedby are attributes that are used to provide accessibility information 
+to assistive technologies like screen readers.
+
+In general, it is recommended to use aria-label when the element doesn't have an explicit label, 
+and aria-describedby when additional information is needed. 
+However, it's important to ensure that the attributes are used appropriately and not redundantly, 
+as it can cause confusion for users of assistive technologies.
+
+
+id="ingredients-textfield" // This ensures that the label is associated with the TextField for accessibility purposes.
+
+// aria-describedby is used to provide a description for an element. It can be used to provide additional
+// information about an element, such as the purpose of the element or instructions for how to interact with it.
+.....
+
+{/* FormControl helps to provide additional accessibility and styling options to the TextField 
+component. */}
+{/* <InputLabel
+htmlFor="ingredients-textfield"
+shrink={localValue || inputFocused}
+>
+Ingredients
+</InputLabel> */}
+// An alternative to the FormControl above
+label="Ingredients"
+InputLabelProps={{
+    shrink: localValue || inputFocused,
+    htmlFor: "ingredients-textfield",
+}}
+
+....
+
+<FormControl name="clearBtn">
+    {/* FormControl helps to provide additional accessibility and styling options to the IconButton 
+    component. It also provides a name attribute to the IconButton component, which can be useful 
+    in some situations, such as testing. */}
+    
+....    
+    
+And for the IconButton -
+// aria-label is used to provide a label for an element that doesn't have an explicit label.
+// It is used to describe the element itself.
+
+
+
+------------------------------------------------------
+
+App.jsBACKUP for the handleSearch f().
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    // const apiUrl1 = `https://api.spoonacular.com/recipes/complexSearch?cuisine=${cuisinesString}&number=${minResults}&apiKey=${apiKey}`;
+    // const apiUrl2 = `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${ingredientsList}&number=${minResults}&apiKey=${apiKey}`;
+    const apiUrl = `https://api.spoonacular.com/recipes/complexSearch?cuisine=${cuisinesString}&includeIngredients=${apiIngredientsString}&number=${minResults}&apiKey=${apiKey}`;
+
+    // const [result1, result2] = await Promise.all([
+    //   fetchData(apiUrl1),
+    //   fetchData(apiUrl2),
+    // ]);
+    // const combinedResults = [...result1.results, ...result2];
+    // console.log("combinedResults", combinedResults);
+    // const uniqueResults = Object.values(
+    //   combinedResults.reduce((acc, recipe) => {
+    //     if (!acc[recipe.id]) {
+    //       acc[recipe.id] = recipe;
+    //     }
+    //     return acc;
+    //   }, {})
+    // );
+    // console.log("uniqueResults", uniqueResults);
+    // In the updated code, we use the spread operator (...) to combine the results of the two API calls into a single array.
+    // Then, we use the reduce() method to create an object where each key is a unique recipe id, and the value is the corresponding recipe object.
+    // The reduce() method iterates through the combined results array, and for each recipe, it checks if the recipe id already exists in the acc object. If it does not exist, it adds the recipe to the acc object using the recipe id as the key.
+    // Finally, we use Object.values() to get an array of the unique recipe objects. The Object.values() method returns an array of the object's values in the same order as a for...in loop over the object's properties.
+
+    const data = await fetchData(apiUrl);
+    console.log("data", data);
+
+    // Make a second API call for each recipe to get the sourceUrl, spoonacularSourceUrl, summary...
+    const recipePromises = (data.results || data).map((recipe) =>
+      fetchData(
+        `https://api.spoonacular.com/recipes/${recipe.id}/information?apiKey=${apiKey}`
+      )
+    );
+    // const recipePromises = uniqueResults.map((recipe) =>
+    //   fetchData(
+    //     `https://api.spoonacular.com/recipes/${recipe.id}/information?apiKey=${apiKey}`
+    //   )
+    // );
+    console.log("recipePromises", recipePromises);
+
+    const recipeData = await Promise.all(recipePromises);
+    console.log("recipeData", recipeData);
+    // Add the sourceUrl, spoonacularSourceUrl, summary... to each recipe object
+    // const recipesWithSourceUrls = data.results.map((recipe, i) => ({
+    //   ...recipe,
+    //   sourceUrl: recipeData[i].sourceUrl,
+    //   spoonacularSourceUrl: recipeData[i].spoonacularSourceUrl,
+    //   summary: recipeData[i].summary,
+    // }));
+    const recipesWithSourceUrls = (data.results || data).map((recipe, i) => {
+      // const recipesWithSourceUrls = uniqueResults.map((recipe, i) => {
+      const extendedIngredients = recipeData[i].extendedIngredients.map(
+        (ingredient) => ingredient.original // ingredient.name
+      );
+      return {
+        ...recipe,
+        cuisine: recipeData[i].cuisines,
+        sourceUrl: recipeData[i].sourceUrl,
+        spoonacularSourceUrl: recipeData[i].spoonacularSourceUrl,
+        summary: recipeData[i].summary,
+        extendedIngredients,
+      };
+    });
+
+    setRecipes(recipesWithSourceUrls);
+    console.log("RECIPES", recipesWithSourceUrls);
+  };
