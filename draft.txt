@@ -83,3 +83,40 @@
   //   const data = await fetchData(apiUrl);
   //   setRecipes(data.results);
   // };
+  
+  
+    useEffect(() => {
+    // const fetchCuisineOptions = async () => {
+    //   const cuisines = await fetchOptions("cuisines", 5);
+    //   setCuisineOptions(cuisines);
+    // };
+    // fetchData(
+    //   `https://api.spoonacular.com/recipes/cuisines?apiKey=${apiKey}&number=10`
+    // didn't work https://api.spoonacular.com/recipes/cuisines?apiKey=06e5b0e43de742888c8362e0be77fb6c&number=10
+    // )
+    //   .then((data) => {
+    //     setCuisineOptions(data.cuisines);
+    //     setCuisine(
+    //       data.cuisines[Math.floor(Math.random() * data.cuisines.length)]
+    //     );
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   });
+    // const fetchIngredientOptions = async () => {
+    //   const ingredients = await fetchOptions("ingredients", 10);
+    //   setIngredientOptions(ingredients);
+    // };
+    // fetchData(
+    //   `https://api.spoonacular.com/food/ingredients/random?apiKey=${apiKey}&number=10`
+    // )
+    //   .then((data) => {
+    //     setIngredientOptions(data.map((ingredient) => ingredient.name));
+    //     setIngredients(data.slice(0, 3).map((ingredient) => ingredient.name));
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   });
+    // fetchCuisineOptions();
+    // fetchIngredientOptions();
+  }, []);

@@ -2,15 +2,13 @@ import { useState, useEffect } from "react";
 import MultipleSelectChip from "./components/Cuisines";
 import IngredientsSelection from "./components/Ingredients";
 import AlignItemsList from "./components/Recipes";
-
 import Button from "@mui/material/Button";
 import SendIcon from "@mui/icons-material/Send";
 import "./styles.css";
 
-const apiKey = "06e5b0e43de742888c8362e0be77fb6c";
 // const apiKey = "ea04abcb75324c4b94b41268d7e52997";
+const apiKey = "06e5b0e43de742888c8362e0be77fb6c";
 const minResults = 2;
-
 const fetchData = async (url) => {
   try {
     const response = await fetch(url);
@@ -22,71 +20,69 @@ const fetchData = async (url) => {
 };
 
 const App = () => {
-  const [ingredientOptions, setIngredientOptions] = useState([
-    "corn",
-    // "potato",
-  ]);
-  // const ingredientsString = ingredientOptions.join(",");
-  const ingredientsString = ingredientOptions[0];
+  const [ingredientsString, setIngredientOptions] = useState("");
+  const urlIngredientsString = ingredientsString.replace(/,/g, ",+");
+
+  // const handleIngredients = (event) => {
+  //   const cleanInput = event.target.value
+  //     .replace(/[^a-zA-Z]+/g, " ")
+  //     .replace(/[\s\n]+/g, "")
+  //     .trim();
+  //   // Only set the ingredientOptions state if the user pressed Enter or left the input
+  //   if (event.key === "Enter" || event.type === "blur") {
+  //     setIngredientOptions(cleanInput);
+  //   } else setIngredientOptions(event.target.value);
+  // };
+  // const [ingredientOptions, setIngredientOptions] = useState([]);
+  // const ingredientsString = ingredientOptions.join(",+");
+
   //  TS const [personName, setPersonName] = React.useState<string[]>([]);
   const [cuisineOptions, setCuisineOptions] = useState([]);
   const cuisinesString = cuisineOptions.join(",");
   const [recipes, setRecipes] = useState([]);
 
-  // const handleSearch = async (e) => {
-  //   e.preventDefault();
-  //   const apiUrl = `https://api.spoonacular.com/food/ingredients/search?query=${ingredientsString}&number=${minResults}&apiKey=${apiKey}`;
-  //   const data = await fetchData(apiUrl);
-  //   setRecipes(data.results);
-  //   console.log("DATA", data.results);
-  // };
-
   const handleSearch = async (e) => {
     e.preventDefault();
+    // const apiUrl1 = `https://api.spoonacular.com/recipes/complexSearch?cuisine=${cuisinesString}&number=${minResults}&apiKey=${apiKey}`;
+    // const apiUrl2 = `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${ingredientsString}&number=${minResults}&apiKey=${apiKey}`;
+    const apiUrl = `https://api.spoonacular.com/recipes/complexSearch?cuisine=${cuisinesString}&includeIngredients=${urlIngredientsString}&number=${minResults}&apiKey=${apiKey}`;
 
-    const apiUrl1 = `https://api.spoonacular.com/recipes/complexSearch?cuisine=${cuisinesString}&number=${minResults}&apiKey=${apiKey}`;
-    const apiUrl2 = `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${ingredientsString}&number=${minResults}&apiKey=${apiKey}`;
-    
-    const [result1, result2] = await Promise.all([fetchData(apiUrl1), fetchData(apiUrl2)]);
-    const combinedResults = [...result1.results, ...result2];
-    const uniqueResults = Object.values(
-      combinedResults.reduce((acc, recipe) => {
-        if (!acc[recipe.id]) {
-          acc[recipe.id] = recipe;
-        }
-        return acc;
-      }, {})
-    );
+    // const [result1, result2] = await Promise.all([
+    //   fetchData(apiUrl1),
+    //   fetchData(apiUrl2),
+    // ]);
+    // const combinedResults = [...result1.results, ...result2];
+    // console.log("combinedResults", combinedResults);
+    // const uniqueResults = Object.values(
+    //   combinedResults.reduce((acc, recipe) => {
+    //     if (!acc[recipe.id]) {
+    //       acc[recipe.id] = recipe;
+    //     }
+    //     return acc;
+    //   }, {})
+    // );
+    // console.log("uniqueResults", uniqueResults);
+    // In the updated code, we use the spread operator (...) to combine the results of the two API calls into a single array.
+    // Then, we use the reduce() method to create an object where each key is a unique recipe id, and the value is the corresponding recipe object.
+    // The reduce() method iterates through the combined results array, and for each recipe, it checks if the recipe id already exists in the acc object. If it does not exist, it adds the recipe to the acc object using the recipe id as the key.
+    // Finally, we use Object.values() to get an array of the unique recipe objects. The Object.values() method returns an array of the object's values in the same order as a for...in loop over the object's properties.
 
-    // const data = await fetchData(apiUrl);
-    // console.log("data", data);
+    const data = await fetchData(apiUrl);
+    console.log("data", data);
+
     // Make a second API call for each recipe to get the sourceUrl, spoonacularSourceUrl, summary...
-    //   const recipePromises = data.results.map((recipe) => {
-    //         fetchData(
-    //           `https://api.spoonacular.com/recipes/${recipe.id}/information?apiKey=${apiKey}`
-    //         );
-    //       })
-    // }
-
-    // const recipePromises = data.results
-    //   ? data.results.map((recipe) =>
-    //       fetchData(
-    //         `https://api.spoonacular.com/recipes/${recipe.id}/information?apiKey=${apiKey}`
-    //       )
-    //     )
-    //   : data.map((recipe) =>
-    //       fetchData(
-    //         `https://api.spoonacular.com/recipes/${recipe.id}/information?apiKey=${apiKey}`
-    //       )
-    //     );
-
     const recipePromises = (data.results || data).map((recipe) =>
       fetchData(
         `https://api.spoonacular.com/recipes/${recipe.id}/information?apiKey=${apiKey}`
       )
     );
-
+    // const recipePromises = uniqueResults.map((recipe) =>
+    //   fetchData(
+    //     `https://api.spoonacular.com/recipes/${recipe.id}/information?apiKey=${apiKey}`
+    //   )
+    // );
     console.log("recipePromises", recipePromises);
+
     const recipeData = await Promise.all(recipePromises);
     console.log("recipeData", recipeData);
     // Add the sourceUrl, spoonacularSourceUrl, summary... to each recipe object
@@ -97,6 +93,7 @@ const App = () => {
     //   summary: recipeData[i].summary,
     // }));
     const recipesWithSourceUrls = (data.results || data).map((recipe, i) => {
+      // const recipesWithSourceUrls = uniqueResults.map((recipe, i) => {
       const extendedIngredients = recipeData[i].extendedIngredients.map(
         (ingredient) => ingredient.original // ingredient.name
       );
@@ -117,71 +114,10 @@ const App = () => {
   const handleClear = (e, type) => {
     e.preventDefault();
     console.log("clear ran");
-    if (type === "ingredients") setIngredientOptions([]);
+    // if (type === "ingredients") setIngredientOptions([]);
+    if (type === "ingredients") setIngredientOptions("");
     if (type === "cuisines") setCuisineOptions([]);
   };
-
-  const fetchOptions = async (type, num) => {
-    // DOCS -
-    // https://api.spoonacular.com/recipes/complexSearch?query=pasta&maxFat=25&number=2
-    // https://api.spoonacular.com/food/ingredients/search?query=banana&number=2&sort=calories&sortDirection=desc&apiKey=06e5b0e43de742888c8362e0be77fb6c
-
-    // CHATGPT -
-    const apiUrl = `https://api.spoonacular.com/food/${type}?apiKey=${apiKey}&number=${num}`;
-    const data = await fetchData(apiUrl);
-
-    if (type === "cuisines") {
-      return data.map((cuisine) => ({
-        label: cuisine.charAt(0).toUpperCase() + cuisine.slice(1),
-        value: cuisine,
-      }));
-    } else if (type === "ingredients") {
-      return data.results
-        .filter((ingredient) => ingredient.name !== null)
-        .map((ingredient) => ({
-          label: ingredient.name,
-          value: ingredient.id,
-        }));
-    } else {
-      return [];
-    }
-  };
-
-  useEffect(() => {
-    // const fetchCuisineOptions = async () => {
-    //   const cuisines = await fetchOptions("cuisines", 5);
-    //   setCuisineOptions(cuisines);
-    // };
-    // fetchData(
-    //   `https://api.spoonacular.com/recipes/cuisines?apiKey=${apiKey}&number=10`
-    // didn't work https://api.spoonacular.com/recipes/cuisines?apiKey=06e5b0e43de742888c8362e0be77fb6c&number=10
-    // )
-    //   .then((data) => {
-    //     setCuisineOptions(data.cuisines);
-    //     setCuisine(
-    //       data.cuisines[Math.floor(Math.random() * data.cuisines.length)]
-    //     );
-    //   })
-    //   .catch((error) => {
-    //     console.log(error);
-    //   });
-    // const fetchIngredientOptions = async () => {
-    //   const ingredients = await fetchOptions("ingredients", 10);
-    //   setIngredientOptions(ingredients);
-    // };
-    // fetchData(
-    //   `https://api.spoonacular.com/food/ingredients/random?apiKey=${apiKey}&number=10`
-    // )
-    //   .then((data) => {
-    //     setIngredientOptions(data.map((ingredient) => ingredient.name));
-    //     setIngredients(data.slice(0, 3).map((ingredient) => ingredient.name));
-    //   })
-    //   .catch((error) => {
-    //     console.log(error);
-    //   });
-    // fetchCuisineOptions();
-    // fetchIngredientOptions();
-  }, []);
 
   return (
     <div className="App">
@@ -193,7 +129,8 @@ const App = () => {
           onClear={handleClear}
         />
         <IngredientsSelection
-          ingredientOptions={ingredientOptions}
+          ingredientOptions={ingredientsString}
+          // setIngredientOptions={handleIngredients}
           setIngredientOptions={setIngredientOptions}
           name="ingredient-selection"
           onClear={handleClear}
@@ -204,13 +141,13 @@ const App = () => {
           type="submit"
           size="large"
           variant={cuisineOptions.length ? "contained" : "outlined"}
-          disabled={!cuisineOptions.length && !ingredientOptions.length}
+          disabled={!cuisineOptions.length && !ingredientsString.length}
           endIcon={<SendIcon />}
         >
           Fetch
         </Button>
         <p>{cuisinesString}</p>
-        <p>{ingredientsString}</p>
+        <p>{urlIngredientsString}</p>
       </form>
       <AlignItemsList recipes={recipes} />
     </div>

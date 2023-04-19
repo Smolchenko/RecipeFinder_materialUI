@@ -101,11 +101,9 @@ export default function MultipleSelectChip({
           color="secondary"
           size="large"
           disabled={!cuisineOptions.length}
+          onClick={(event) => onClear(event, "cuisines")}
         >
-          <DeleteIcon
-            type="button"
-            onClick={(event) => onClear(event, "cuisines")}
-          />
+          <DeleteIcon type="button" />
         </IconButton>
       </FormControl>
     </div>
