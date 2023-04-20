@@ -1,87 +1,76 @@
 import { useState, useRef, useEffect } from "react";
-import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
-import FormControl from "@mui/material/FormControl";
-import IconButton from "@mui/material/IconButton";
+
+import { Box, TextField, FormControl, IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 
+import { cleanInputString } from "../utils/utils";
+
 export default function IngredientsSelection({
-  ingredientOptions,
-  setIngredientOptions,
+  ingredients,
+  setIngredients,
   onClear,
 }) {
-  // TS  const handleChange = (event: SelectChangeEvent<typeof personName>) => {
-  //   const handleChange = (event) => {
-  //     const {
-  //       target: { value },
-  //     } = event;
-
-  //     setIngredientOptions(
-  //       // CHECK
-  //       // On autofill we get a stringified value.
-  //       typeof value === "string" ? value.split(",") : value
-  //     );
-  //   };
-  const [localValue, setLocalValue] = useState(ingredientOptions);
+  const [localValue, setLocalValue] = useState("");
+  const [inputFocused, setInputFocused] = useState(false);
   const inputRef = useRef();
-  const handleChange = (event) => {
-    const {
-      target: { value },
-    } = event;
-    setLocalValue(typeof value === "string" ? value.split(",") : value);
-
-    const cleanInput = value
-      .replace(/[^a-zA-Z]+/g, ",")
-      .replace(/[\s\n]+/g, "")
-      .trim();
-    if (event.type === "blur") {
-      setIngredientOptions(cleanInput);
-      //   setLocalValue(ingredientOptions);
-      //   event.target.value = ingredientOptions;
-    }
-  };
 
   useEffect(() => {
     if (inputRef.current) {
-      inputRef.current.value = ingredientOptions;
-      setLocalValue(ingredientOptions);
+      inputRef.current.value = ingredients;
+      setLocalValue(ingredients);
     }
-  }, [ingredientOptions]);
+  }, [ingredients]);
+
+  // TS  const handleChange = (event: SelectChangeEvent<typeof personName>) => {
+  const handleChange = (event) => {
+    setLocalValue(event.target.value);
+  };
+
+  const handleBlur = (event) => {
+    // if (event.type === "blur") {
+    const cleanInput = cleanInputString(localValue);
+    setLocalValue(cleanInput);
+    setIngredients(cleanInput);
+    setInputFocused(false);
+    // }
+  };
 
   return (
     <Box
-      //   component="form"
       sx={{
-        "& .MuiTextField-root": { m: 1, width: "300px" },
+        "& .MuiTextField-root": { mt: 1, width: "300px" },
+        "& .MuiButtonBase-root": { mt: 1 },
       }}
-      //   noValidate
-      autoComplete="off"
     >
-      <div>
-        {/* <FormControl> ?? */}
+      <FormControl name="ingredients-input-text">
         <TextField
-          id="outlined-multiline-static"
-          label="Ingredients"
+          id="ingredients-textfield"
           multiline
           rows={4}
-          //   value={ingredientOptions}
-          value={localValue}
           inputRef={inputRef}
+          value={localValue}
           onChange={handleChange}
-          onBlur={handleChange}
+          onBlur={handleBlur}
+          onFocus={() => setInputFocused(true)}
+          aria-describedby="ingredients-textfield-selection-text"
+          label="Ingredients"
+          InputLabelProps={{
+            shrink: Boolean(localValue) || inputFocused,
+            htmlFor: "ingredients-textfield",
+          }}
         />
-        <FormControl name="clear">
-          <IconButton
-            aria-label="delete"
-            color="secondary"
-            size="large"
-            disabled={!ingredientOptions.length}
-            onClick={(event) => onClear(event, "ingredients")}
-          >
-            <DeleteIcon type="button" />
-          </IconButton>
-        </FormControl>
-      </div>
+      </FormControl>
+      <FormControl name="clear-ingredients-button">
+        <IconButton
+          aria-label="delete"
+          color="secondary"
+          size="large"
+          disabled={!ingredients.length}
+          onClick={(event) => onClear(event, "ingredients")}
+        >
+          <DeleteIcon type="button" />
+        </IconButton>
+      </FormControl>
     </Box>
   );
 }
