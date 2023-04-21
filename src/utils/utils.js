@@ -1,6 +1,6 @@
-// const apiKey = "ea04abcb75324c4b94b41268d7e52997";
+// BU const apiKey = "ea04abcb75324c4b94b41268d7e52997";
 const apiKey = "06e5b0e43de742888c8362e0be77fb6c";
-const minResults = 2;
+const minResults = 5;
 
 const fetchData = async (url) => {
   try {

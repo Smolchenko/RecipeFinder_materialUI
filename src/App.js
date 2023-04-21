@@ -23,11 +23,13 @@ const App = () => {
 
     const searchRecipesUrl = `https://api.spoonacular.com/recipes/complexSearch?cuisine=${apiCuisinesString}&includeIngredients=${apiIngredientsString}&number=${minResults}&apiKey=${apiKey}`;
     const data = await fetchData(searchRecipesUrl);
+
     const recipePromises = (data.results || data).map((recipe) => {
       const recipeUrl = `https://api.spoonacular.com/recipes/${recipe.id}/information?apiKey=${apiKey}`;
-      fetchData(recipeUrl);
+      return fetchData(recipeUrl);
     });
     const recipeData = await Promise.all(recipePromises);
+
     const recipesWithAdditionalData = (data.results || data).map(
       (recipe, i) => {
         return {
@@ -41,7 +43,6 @@ const App = () => {
         };
       }
     );
-
     setRecipes(recipesWithAdditionalData);
   };
 
