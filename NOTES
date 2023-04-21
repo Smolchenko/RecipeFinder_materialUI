@@ -136,3 +136,21 @@ App.jsBACKUP for the handleSearch f().
     setRecipes(recipesWithSourceUrls);
     console.log("RECIPES", recipesWithSourceUrls);
   };
+  
+  
+  
+  For recipePromises -
+  If you don't explicitly return a value from the map function, it will return an array with 
+  the same length as the input array, but with each element set to undefined.
+  That's why I had the error, I didn't write return fetchData(...), only fetchData(...).
+  
+  
+  Alternatively, you can use implicit return syntax by removing the curly braces around the fetchData call.
+  But that's only correct if it was written like so -
+  const recipePromises = (data.results || data).map((recipe) =>
+  fetchData(
+    `https://api.spoonacular.com/recipes/${recipe.id}/information?apiKey=${apiKey}`
+  )
+);
+
+  
